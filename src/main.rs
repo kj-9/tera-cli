@@ -2,8 +2,7 @@
 
 use clap::Parser;
 //use anyhow::{Context, Result};
-use tera::{Tera, Context};
-
+use tera::{Context, Tera};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -12,15 +11,11 @@ struct Cli {
     template: std::path::PathBuf,
 }
 
-
 fn main() -> std::io::Result<()> {
-
-
     let args = Cli::parse();
 
     // bulk read file content
     let content = std::fs::read_to_string(args.template)?;
-
 
     let context = Context::new();
     // add stuff to context
@@ -29,8 +24,4 @@ fn main() -> std::io::Result<()> {
     print!("{}", result.unwrap());
 
     Ok(())
-
 }
-
-
-
