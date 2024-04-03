@@ -6,6 +6,7 @@ use tera::{Context, Tera};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 struct Cli {
     /// The path to the template file to read
     template: std::path::PathBuf,
