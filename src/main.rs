@@ -10,6 +10,9 @@ use tera::{Context, Tera};
 struct Cli {
     /// The path to the template file to read
     template: std::path::PathBuf,
+    /// The path to the output file
+    #[clap(short, long)]
+    output: Option<std::path::PathBuf>,
 }
 
 fn main() -> std::io::Result<()> {
@@ -22,7 +25,14 @@ fn main() -> std::io::Result<()> {
     // add stuff to context
     let result = Tera::one_off(&content, &context, false);
 
-    print!("{}", result.unwrap());
+    match args.output {
+        Some(output) => {
+            std::fs::write(output, result.unwrap())?;
+        }
+        None => {
+            print!("{}", result.unwrap());
+        }
+    }
 
     Ok(())
 }
