@@ -9,28 +9,39 @@ use tera::{Context, Tera};
 #[clap(version = env!("CARGO_PKG_VERSION"))]
 struct Cli {
     /// The path to the template file to read
-    template: std::path::PathBuf,
+    template_dir: std::path::PathBuf,
     /// The path to the output file
-    #[clap(short, long)]
-    output: Option<std::path::PathBuf>,
+    output_dir: std::path::PathBuf,
 }
 
 fn main() -> std::io::Result<()> {
     let args = Cli::parse();
 
-    // bulk read file content
-    let content = std::fs::read_to_string(args.template)?;
+    if !args.template_dir.is_dir() {
+        eprintln!("{} is not a directory", args.template_dir.display());
+        std::process::exit(1);
+    }
+
+    if !args.output_dir.is_dir() {
+        eprintln!("{} is not a directory", args.output_dir.display());
+        std::process::exit(1);
+    }
 
     let context = Context::new();
-    // add stuff to context
-    let result = Tera::one_off(&content, &context, false);
 
-    match args.output {
-        Some(output) => {
-            std::fs::write(output, result.unwrap())?;
-        }
-        None => {
-            print!("{}", result.unwrap());
+    for entry in std::fs::read_dir(&args.template_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file() {
+            let content = std::fs::read_to_string(&path)?;
+            // add stuff to context
+            let result = Tera::one_off(&content, &context, false);
+
+            std::fs::write(
+                args.output_dir.join(path.file_name().unwrap()),
+                result.unwrap(),
+            )?;
         }
     }
 
