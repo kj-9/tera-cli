@@ -65,9 +65,18 @@ fn render_template(
 ) -> std::io::Result<()> {
     let content = std::fs::read_to_string(template_file)?;
     let result = Tera::one_off(&content, context, false);
-    std::fs::write(output_file, result.unwrap())?;
 
-    Ok(())
+    match result {
+        Ok(result) => {
+            println!("Rendering template: {template_file:?} to {output_file:?}");
+            std::fs::write(output_file, result)?;
+            Ok(())
+        }
+        Err(error) => {
+            eprintln!("Error rendering template: {error:?}");
+            Ok(())
+        }
+    }
 }
 
 fn watch(template_dir: &Path, output_dir: &Path) -> notify::Result<()> {
