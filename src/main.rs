@@ -71,7 +71,6 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-
     Ok(())
 }
 
@@ -111,7 +110,7 @@ fn watch(template_dir: &Path, output_dir: &Path) -> Result<()> {
         match res {
             Ok(event) => match event.kind {
                 EventKind::Modify(_) => {
-                    info!("Modify: {event:?}");
+                    debug!("Modify: {event:?}");
                     let modified_path = event.paths.first().unwrap();
 
                     // get relative path of the file to the path
@@ -119,11 +118,13 @@ fn watch(template_dir: &Path, output_dir: &Path) -> Result<()> {
                     let output_file = Path::new(&output_dir).join(relative_path);
                     let context = Context::new();
 
-                    info!("Rendering template: {modified_path:?} to {output_file:?}");
-                    render_template(modified_path, &output_file, &context)?;
+                    if let Err(err) = render_template(modified_path, &output_file, &context) {
+                        error!("Error rendering template at {:?}: {:?}", modified_path, err);
+                        continue;
+                    }
                 }
                 _ => {
-                    info!("Event: {event:?}");
+                    debug!("Event: {event:?}");
                 }
             },
             Err(error) => info!("Error: {error:?}"),
