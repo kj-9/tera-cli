@@ -41,15 +41,6 @@ fn main() -> Result<()> {
         )
     }
 
-    if args.watch {
-        info!("Watching for changes in {}", args.template_dir.display());
-        if let Err(error) = watch(&args.template_dir, &args.output_dir) {
-            info!("Error: {error:?}");
-        }
-
-        return Ok(());
-    }
-
     let context = Context::new();
 
     for entry in std::fs::read_dir(&args.template_dir)? {
@@ -70,6 +61,16 @@ fn main() -> Result<()> {
             }
         }
     }
+
+    if args.watch {
+        info!("Watching for changes in {}", args.template_dir.display());
+        if let Err(error) = watch(&args.template_dir, &args.output_dir) {
+            info!("Error: {error:?}");
+        }
+
+        return Ok(());
+    }
+
 
     Ok(())
 }
