@@ -12,6 +12,7 @@ test:
 lint:
     cargo clippy -- -D warnings
     pre-commit run -a
+    cog --check README.md
 
 # Run the project
 run:
