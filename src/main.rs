@@ -6,7 +6,7 @@ use log::{debug, error, info};
 use notify::{Config, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
 
-/// Search for a pattern in a file and display the lines that contain it.
+/// tera-cli: Simple cli tool to render tera templates
 #[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"))]
 struct Cli {

@@ -1,6 +1,37 @@
 # tera-cli
 
-Simple tera template engine CLI.
+Simple cli tool to render tera templates.
+
+
+## Usage
+
+<!-- [[[cog
+import cog
+import subprocess
+result = subprocess.run(["cargo", "run", "-q", "--", "--help"], capture_output=True, text=True)
+cog.out(f"""
+```
+{result.stdout}
+```
+""")
+]]] -->
+
+```
+tera-cli: Simple cli tool to render tera templates
+
+Usage: tera [OPTIONS] <TEMPLATE_DIR> <OUTPUT_DIR>
+
+Arguments:
+  <TEMPLATE_DIR>  The path to the template file to read
+  <OUTPUT_DIR>    The path to the output file
+
+Options:
+  -w, --watch    Watch for changes in template_dir
+  -h, --help     Print help
+  -V, --version  Print version
+
+```
+<!-- [[[end]]] -->
 
 ## Setup
 
