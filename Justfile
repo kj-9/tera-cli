@@ -29,3 +29,9 @@ pre-release-dry-run:
 # commit and tag prerelease
 pre-release:
     cz bump --prerelease alpha --changelog
+
+release-dry-run:
+    cz bump --changelog --dry-run
+
+release:
+    cz bump --changelog
