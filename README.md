@@ -4,16 +4,22 @@ Simple tera template engine CLI.
 
 ## Setup
 
-install rustup and cargo:
+you need cargo:
   
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
+you need just to run dev tools:
+```sh
+brew install just
+```
 
-install dev tools:
+you need some python tools, `pre-commmit` and `commitize`.
+I recommend using pipx:
 
 ```sh
+brew install pipx
 pipx install pre-commit commitizen
 pre-commit install
 ```
@@ -22,7 +28,7 @@ pre-commit install
 
 lint:
 ```sh
-pre-commit run --all-files
+just pre-commit
 ```
 
 commit:
