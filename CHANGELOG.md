@@ -1,3 +1,9 @@
+## v0.0.1 (2024-04-05)
+
+### Refactor
+
+- **justfile**: add release commands
+
 ## v0.0.1-a4 (2024-04-05)
 
 ### Refactor

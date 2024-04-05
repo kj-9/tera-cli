@@ -1,6 +1,6 @@
 [package]
 name = "tera-cli"
-version = "0.0.1-a4"
+version = "0.0.1"
 edition = "2021"
 
 [[bin]]
