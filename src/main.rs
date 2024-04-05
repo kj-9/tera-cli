@@ -107,27 +107,26 @@ fn watch(template_dir: &Path, output_dir: &Path) -> Result<()> {
     watcher.watch(template_dir, RecursiveMode::Recursive)?;
 
     for res in rx {
-        match res {
-            Ok(event) => match event.kind {
-                EventKind::Modify(_) => {
-                    debug!("Modify: {event:?}");
-                    let modified_path = event.paths.first().unwrap();
+        debug!("Get event from watcher");
+        let event = res?;
+        match event.kind {
+            EventKind::Modify(_) => {
+                debug!("Modify: {event:?}");
+                let modified_path = event.paths.first().unwrap();
 
-                    // get relative path of the file to the path
-                    let relative_path = modified_path.strip_prefix(&full_tepmlate_dir).unwrap();
-                    let output_file = Path::new(&output_dir).join(relative_path);
-                    let context = Context::new();
+                // get relative path of the file to the path
+                let relative_path = modified_path.strip_prefix(&full_tepmlate_dir).unwrap();
+                let output_file = Path::new(&output_dir).join(relative_path);
+                let context = Context::new();
 
-                    if let Err(err) = render_template(modified_path, &output_file, &context) {
-                        error!("Error rendering template at {:?}: {:?}", modified_path, err);
-                        continue;
-                    }
+                if let Err(err) = render_template(modified_path, &output_file, &context) {
+                    error!("Error rendering template at {:?}: {:?}", modified_path, err);
+                    continue;
                 }
-                _ => {
-                    debug!("Event: {event:?}");
-                }
-            },
-            Err(error) => info!("Error: {error:?}"),
+            }
+            _ => {
+                debug!("Event: {event:?}");
+            }
         }
     }
 
