@@ -3,6 +3,9 @@ use tera::{Context, Tera};
 
 use notify::{Config, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
+use log::{info, error, debug};
+use env_logger;
+use anyhow::{Result, Error, bail};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -17,25 +20,27 @@ struct Cli {
     watch: bool,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> Result<()> {
+    env_logger::init();
+
+    debug!("parse command line arguments");
     let args = Cli::parse();
+
 
     // check if the template_dir is a directory
     if !args.template_dir.is_dir() {
-        eprintln!("{} is not a directory", args.template_dir.display());
-        std::process::exit(1);
+        bail!("{:?} is not a directory. Please provide a valid directory", args.template_dir)
     }
 
     // check if the output_dir is a directory
     if !args.output_dir.is_dir() {
-        eprintln!("{} is not a directory", args.output_dir.display());
-        std::process::exit(1);
+        bail!("{:?} is not a directory. Please provide a valid directory", args.output_dir)
     }
 
     if args.watch {
-        println!("Watching for changes in {}", args.template_dir.display());
+        info!("Watching for changes in {}", args.template_dir.display());
         if let Err(error) = watch(&args.template_dir, &args.output_dir) {
-            println!("Error: {error:?}");
+            info!("Error: {error:?}");
         }
 
         return Ok(());
@@ -44,12 +49,22 @@ fn main() -> std::io::Result<()> {
     let context = Context::new();
 
     for entry in std::fs::read_dir(&args.template_dir)? {
-        let entry = entry?;
-        let path = entry.path();
+
+        if let Err(err) = entry {
+            error!("Error reading directory: {:?}", err);
+            continue;
+        }
+
+        let path = entry?.path();
 
         if path.is_file() {
-            let output_file = args.output_dir.join(path.file_name().unwrap());
-            render_template(&path, &output_file, &context)?;
+            let file_name = path.file_name().unwrap();
+            let output_file = args.output_dir.join(file_name);
+
+            if let Err(err) = render_template(&path, &output_file, &context) {
+                error!("Error rendering template at {:?}: {:?}", path, err);
+                continue;
+            }
         }
     }
 
@@ -59,27 +74,20 @@ fn main() -> std::io::Result<()> {
 // function to render and write the template
 // takes template file, output file and context as arguments
 fn render_template(
-    template_file: &std::path::Path,
-    output_file: &std::path::Path,
+    template_file: &Path,
+    output_file: &Path,
     context: &tera::Context,
-) -> std::io::Result<()> {
+) -> Result<(), Error> {
     let content = std::fs::read_to_string(template_file)?;
-    let result = Tera::one_off(&content, context, false);
 
-    match result {
-        Ok(result) => {
-            println!("Rendering template: {template_file:?} to {output_file:?}");
-            std::fs::write(output_file, result)?;
-            Ok(())
-        }
-        Err(error) => {
-            eprintln!("Error rendering template: {error:?}");
-            Ok(())
-        }
-    }
+    info!("Rendering template: {:?} to {:?}", template_file, output_file);
+    let result = Tera::one_off(&content, context, false)?;
+    std::fs::write(output_file, result)?;
+
+    Ok(())
 }
 
-fn watch(template_dir: &Path, output_dir: &Path) -> notify::Result<()> {
+fn watch(template_dir: &Path, output_dir: &Path) -> Result<()> {
     let full_tepmlate_dir = template_dir.canonicalize()?;
 
     let (tx, rx) = std::sync::mpsc::channel();
@@ -96,7 +104,7 @@ fn watch(template_dir: &Path, output_dir: &Path) -> notify::Result<()> {
         match res {
             Ok(event) => match event.kind {
                 EventKind::Modify(_) => {
-                    println!("Modify: {event:?}");
+                    info!("Modify: {event:?}");
                     let modified_path = event.paths.first().unwrap();
 
                     // get relative path of the file to the path
@@ -104,14 +112,14 @@ fn watch(template_dir: &Path, output_dir: &Path) -> notify::Result<()> {
                     let output_file = Path::new(&output_dir).join(relative_path);
                     let context = Context::new();
 
-                    println!("Rendering template: {modified_path:?} to {output_file:?}");
+                    info!("Rendering template: {modified_path:?} to {output_file:?}");
                     render_template(modified_path, &output_file, &context)?;
                 }
                 _ => {
-                    println!("Event: {event:?}");
+                    info!("Event: {event:?}");
                 }
             },
-            Err(error) => println!("Error: {error:?}"),
+            Err(error) => info!("Error: {error:?}"),
         }
     }
 
