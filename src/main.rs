@@ -1,11 +1,10 @@
 use clap::Parser;
 use tera::{Context, Tera};
 
+use anyhow::{bail, Error, Result};
+use log::{debug, error, info};
 use notify::{Config, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
-use log::{info, error, debug};
-use env_logger;
-use anyhow::{Result, Error, bail};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -26,15 +25,20 @@ fn main() -> Result<()> {
     debug!("parse command line arguments");
     let args = Cli::parse();
 
-
     // check if the template_dir is a directory
     if !args.template_dir.is_dir() {
-        bail!("{:?} is not a directory. Please provide a valid directory", args.template_dir)
+        bail!(
+            "{:?} is not a directory. Please provide a valid directory",
+            args.template_dir
+        )
     }
 
     // check if the output_dir is a directory
     if !args.output_dir.is_dir() {
-        bail!("{:?} is not a directory. Please provide a valid directory", args.output_dir)
+        bail!(
+            "{:?} is not a directory. Please provide a valid directory",
+            args.output_dir
+        )
     }
 
     if args.watch {
@@ -49,7 +53,6 @@ fn main() -> Result<()> {
     let context = Context::new();
 
     for entry in std::fs::read_dir(&args.template_dir)? {
-
         if let Err(err) = entry {
             error!("Error reading directory: {:?}", err);
             continue;
@@ -80,7 +83,10 @@ fn render_template(
 ) -> Result<(), Error> {
     let content = std::fs::read_to_string(template_file)?;
 
-    info!("Rendering template: {:?} to {:?}", template_file, output_file);
+    info!(
+        "Rendering template: {:?} to {:?}",
+        template_file, output_file
+    );
     let result = Tera::one_off(&content, context, false)?;
     std::fs::write(output_file, result)?;
 
