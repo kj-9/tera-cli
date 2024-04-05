@@ -1,7 +1,8 @@
 # tera-cli
 
-Simple cli tool to render tera templates.
+Simple cli tool to render [tera](https://github.com/Keats/tera) templates.
 
+tera is a Jinja2 like template engine written in Rust.
 
 ## Usage
 
