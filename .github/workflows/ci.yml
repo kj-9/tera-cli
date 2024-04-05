@@ -20,7 +20,11 @@ jobs:
         run: cargo test --verbose
       - name: Lint with clippy
         run: cargo clippy -- -D warnings
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
+        with:
+          cache: 'pip'
       - uses: pre-commit/action@v3.0.1
       - name: Run pre-commit hooks
         run: pre-commit run -a
+      - name: Run cog
+        run: pip install cogapp && cog --check README.md
