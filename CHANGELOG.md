@@ -1,3 +1,9 @@
+## v0.0.1-a4 (2024-04-05)
+
+### Refactor
+
+- **cli**: not panic if template fail when watch mode
+
 ## v0.0.1-a3 (2024-04-04)
 
 ### Refactor

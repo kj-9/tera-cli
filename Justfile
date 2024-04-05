@@ -21,3 +21,11 @@ run:
 clean:
     cargo clean
 
+
+# commit and tag prerelease: dry-run
+pre-release-dry-run:
+    cz bump --prerelease alpha --changelog --dry-run
+
+# commit and tag prerelease
+pre-release:
+    cz bump --prerelease alpha --changelog
