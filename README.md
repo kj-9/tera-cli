@@ -28,7 +28,7 @@ pre-commit install
 
 lint:
 ```sh
-just pre-commit
+just lint
 ```
 
 commit:
@@ -38,18 +38,18 @@ cz c
 
 ## Release
 
-bump version:
+bump version for pre-release:
 ```sh
-cz bump --prerelease alpha --changelog # for alpha version
-
-# or
-cz bump --changelog # for release version
+just pre-release-dry-run # check what will be changed
+just pre-release
 ```
 
-then push tag to trigger release:
+bump version for release:
 ```sh
-git push --follow-tags
+just release-dry-run # check what will be changed
+just release
 ```
+
 
 ## Install from Github Release
 
