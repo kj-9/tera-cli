@@ -19,4 +19,4 @@ jobs:
       - name: Run tests
         run: cargo test --verbose
       - name: Lint with clippy
-        run: cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings && pre-commit run -a
