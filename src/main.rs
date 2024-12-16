@@ -9,7 +9,7 @@ use std::path::Path;
 /// tera-cli: Simple cli tool to render tera templates
 #[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"))]
-struct Cli {
+pub struct Cli {
     /// The path to the template file to read
     template_dir: std::path::PathBuf,
     /// The path to the output file

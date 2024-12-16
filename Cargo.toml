@@ -14,3 +14,7 @@ env_logger = "0.11.3"
 log = "0.4.21"
 notify = "6.1.1"
 tera = "1.19.1"
+
+[build-dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+clap_mangen = "0.2.24"
