@@ -10,9 +10,15 @@ test:
 
 # Lint the project
 lint:
+    cargo check
+    cargo fmt --all --check
     cargo clippy -- -D warnings
-    pre-commit run -a
     cog --check README.md
+
+fmt:
+    cargo fmt --all
+    cargo clippy --fix
+    cog -r README.md
 
 # Run the project
 run:

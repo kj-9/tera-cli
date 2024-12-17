@@ -1,11 +1,14 @@
+use clap::CommandFactory;
+
+#[path = "src/main.rs"]
+mod cli;
 
 fn main() -> std::io::Result<()> {
     print!("hello1");
-    let out_dir = std::path::PathBuf::from(std::env::var_os("OUT_DIR").ok_or(std::io::ErrorKind::NotFound)?);
+    let out_dir =
+        std::path::PathBuf::from(std::env::var_os("OUT_DIR").ok_or(std::io::ErrorKind::NotFound)?);
 
-    let cmd = clap::Command::new("mybin")
-        .arg(clap::arg!(-n --name <NAME>))
-        .arg(clap::arg!(-c --count <NUM>));
+    let cmd = cli::Cli::command();
 
     let man = clap_mangen::Man::new(cmd);
     let mut buffer: Vec<u8> = Default::default();
