@@ -17,7 +17,7 @@ lint:
 
 fmt:
     cargo fmt --all
-    cargo clippy --fix
+    cargo clippy --fix --allow-staged
     cog -r README.md
 
 # Run the project
